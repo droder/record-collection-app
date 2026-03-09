@@ -19,30 +19,17 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Create Gradle wrapper manually
+      - name: Download Gradle 8.7
         run: |
-          cat > gradlew <<'EOF'
-          #!/usr/bin/env sh
-          DIR="$(cd "$(dirname "$0")" && pwd)"
-          java -classpath "$DIR/gradle/wrapper/gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain "$@"
-          EOF
-          chmod +x gradlew
+          wget https://services.gradle.org/distributions/gradle-8.7-bin.zip
+          unzip -q gradle-8.7-bin.zip
+          echo "$PWD/gradle-8.7/bin" >> $GITHUB_PATH
 
-          mkdir -p gradle/wrapper
-
-          cat > gradle/wrapper/gradle-wrapper.properties <<'EOF'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
-
-          curl -L -o gradle-8.7-bin.zip https://services.gradle.org/distributions/gradle-8.7-bin.zip
-          unzip -p gradle-8.7-bin.zip gradle-8.7/lib/plugins/gradle-wrapper-8.7.jar > gradle/wrapper/gradle-wrapper.jar
+      - name: Verify Gradle
+        run: gradle -v
 
       - name: Build debug APK
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: gradle :app:assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
