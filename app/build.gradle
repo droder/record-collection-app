@@ -16,10 +16,10 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
         }
-        debug {
+        release {
             minifyEnabled false
         }
     }
